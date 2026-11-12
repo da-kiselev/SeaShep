@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Работа над ошибками: Sea Shepherd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=PT+Mono&family=Rubik:wght@400;600;700&family=Rubik+Spray+Paint&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+/* Layout: one photocopied zine sheet taped to a wall, feedback panel docked below it like a stapled note. */
+:root{
+  --wall:#D9D9D3; --sheet:#F2F2EE; --ink:#151515; --muted:#5B5B57; --line:#151515;
+  --red:#D7261E; --tape:#F5D20A; --ok:#1F7A3A; --panel:#FFFFFF; --ghost:rgba(21,21,21,.08);
+  --spray:"Rubik Spray Paint","Rubik",system-ui,sans-serif;
+  --type:"Special Elite","PT Mono","Courier New",monospace;
+  --marker:"Permanent Marker","Rubik",cursive;
+  --ui:"Rubik",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-soft:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .14 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --wall:#0E0E0E; --sheet:#1C1C1B; --ink:#ECECE6; --muted:#A3A39C; --line:#ECECE6;
+    --red:#FF5446; --tape:#E8C500; --ok:#5FD08A; --panel:#232322; --ghost:rgba(236,236,230,.08); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --wall:#0E0E0E; --sheet:#1C1C1B; --ink:#ECECE6; --muted:#A3A39C; --line:#ECECE6;
+  --red:#FF5446; --tape:#E8C500; --ok:#5FD08A; --panel:#232322; --ghost:rgba(236,236,230,.08); color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--wall) var(--grain);color:var(--ink);font:400 16px/1.55 var(--ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:700px;margin:0 auto;padding-block:26px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+header h1{font:400 clamp(2.3rem,9vw,3.6rem)/.95 var(--spray);color:var(--ink);margin:0 0 10px;text-wrap:balance;letter-spacing:.01em}
+header h1::after{content:"";display:block;width:3.2em;height:.22em;margin-top:.18em;background:var(--red);transform:rotate(-1.2deg)}
+header p{margin:0;font:400 1.05rem/1.45 var(--type);color:var(--ink)}
+#progress{margin-top:12px;font:600 .78rem/1.3 var(--ui);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);min-height:1.3em}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font:600 .78rem/1.3 var(--ui);letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;color:var(--ink);background:transparent;border:2px dashed var(--line)}
+.chip.cur{background:var(--tape);color:#151515;border:2px solid #151515;transform:rotate(-1.5deg)}
+.chip.done{background:var(--ink);color:var(--sheet);border:2px solid var(--ink);text-decoration:line-through 2px var(--red)}
+
+.page{position:relative;margin-top:26px;background:var(--sheet) var(--grain-soft);
+  padding:30px 18px 30px 22px;border:2px solid var(--line);transform:rotate(-.35deg);
+  box-shadow:6px 6px 0 var(--ink);overflow-x:auto}
+.page::before,.page::after{content:"";position:absolute;top:-12px;width:96px;height:24px;background:var(--tape);opacity:.88;box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.page::before{left:18px;transform:rotate(-5deg)}
+.page::after{right:18px;transform:rotate(4deg)}
+.legend{font:400 .88rem/1.45 var(--ui);color:var(--muted);margin:0 0 14px}
+.lg-was{text-decoration:line-through 2px var(--red);color:var(--ink)}
+.lg-now{font-family:var(--marker);color:var(--red)}
+.lg-ins{color:var(--red);font-weight:700}
+.page h2{display:inline-block;margin:0 0 10px;padding:2px 10px;font:400 1rem/1.4 var(--type);letter-spacing:.2em;text-transform:uppercase;color:var(--sheet);background:var(--ink)}
+.text{font:400 1.32rem/2.7 var(--type);color:var(--ink);margin:0}
+.text+.text{margin-top:.5em}
+
+.sent{box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.sent.ru{color:var(--muted);font-style:italic}
+.seg{position:relative}
+.seg.tap{cursor:pointer}
+.seg.tap:hover{background:var(--ghost)}
+.gap{display:inline-block;width:.9em;text-align:center;position:relative;line-height:1.2;vertical-align:baseline}
+.gap.tap{cursor:pointer;padding:.55em .1em;margin:-.55em 0}
+.gap .dot{display:inline-block;width:6px;height:6px;background:var(--muted);vertical-align:middle;transform:rotate(45deg)}
+.gap.tap:hover .dot{background:var(--red)}
+.tap:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.seg.fixed,.gap.ins{display:inline-block;position:relative;line-height:1.2;white-space:nowrap}
+.gap.ins{width:auto;min-width:.9em}
+.seg.fixed .orig{text-decoration:line-through 3px var(--red)}
+.gap.ins .caret{color:var(--red);font:700 .8em var(--ui)}
+.above{position:absolute;left:50%;bottom:100%;transform:translateX(-50%) rotate(-2deg);font:400 .9em/1 var(--marker);color:var(--red);white-space:nowrap;pointer-events:none}
+.seg.fixed.long{display:inline;white-space:normal;line-height:inherit}
+.seg.fixed.long .neu{font-family:var(--marker);color:var(--red)}
+.sel{outline:3px solid var(--ink);outline-offset:2px;background:var(--tape);color:#151515}
+.pulse{outline:3px dashed var(--red);outline-offset:3px;animation:blink .9s ease-in-out infinite alternate}
+@keyframes blink{from{outline-color:var(--red)}to{outline-color:transparent}}
+.nope{animation:shake .32s}
+@keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}.nope{animation:none;color:var(--red)}}
+
+.panel{margin-top:22px;background:var(--panel);border:2px solid var(--line);padding:18px 18px 20px;box-shadow:4px 4px 0 var(--ink)}
+.panel.dock{position:sticky;bottom:0;max-height:45vh;overflow-y:auto;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.panel p{margin:0 0 10px}
+.lead{font:700 1.05rem/1.35 var(--ui);text-transform:uppercase;letter-spacing:.03em}
+.count b{background:var(--tape);color:#151515;padding:0 4px}
+.howto{color:var(--muted);font-size:.95rem}
+.msg{color:var(--ink);background:var(--ghost);border-left:5px solid var(--red);padding:8px 12px}
+.msg.ok{border-left-color:var(--ok);color:var(--ok);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
+.btn{font:700 .95rem/1 var(--ui);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--sheet);border:2px solid var(--ink);padding:.85em 1.2em;cursor:pointer;box-shadow:3px 3px 0 var(--red);transition:transform .08s,box-shadow .08s}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--red)}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--red)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:none}
+.btn:focus-visible,input:focus-visible,summary:focus-visible,.speak:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.type{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.type input{flex:1 1 200px;min-width:0;font:400 1.3rem/1.2 var(--type);color:var(--ink);background:var(--sheet);border:2px solid var(--line);border-radius:0;padding:8px 12px}
+.hand{font:400 1.25rem/1.6 var(--type);color:var(--ink)}
+.red{color:var(--red);font-family:var(--marker)}
+.clean{margin:4px 0 0;white-space:pre-line}
+.speak{font:600 .85rem var(--ui);letter-spacing:.06em;text-transform:uppercase;background:none;border:0;color:var(--red);cursor:pointer;padding:4px 0;text-decoration:underline 2px;text-underline-offset:4px}
+
+.rule h3{font:400 clamp(1.6rem,6vw,2.1rem)/1.05 var(--spray);color:var(--ink);margin:0 0 6px;text-wrap:balance}
+.rule .term{display:inline-block;font:600 .75rem/1.4 var(--ui);letter-spacing:.06em;text-transform:uppercase;color:var(--sheet);background:var(--red);padding:2px 8px;margin-bottom:12px}
+.rule ul{list-style:none;padding:0;margin:12px 0}
+.rule li{font:400 1.15rem/1.5 var(--type);padding:4px 0 4px 18px;position:relative}
+.rule li::before{content:"";position:absolute;left:0;top:.75em;width:8px;height:8px;background:var(--red)}
+.rule li span{font:400 .88rem var(--ui);color:var(--muted);margin-left:6px}
+.rule li b{background:var(--tape);color:#151515;font-weight:400;padding:0 2px}
+.rule .tip{font-size:.93rem;color:var(--muted);border-top:2px dashed var(--line);padding-top:10px}
+.tbl{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font:400 1.08rem/1.4 var(--type);margin:10px 0}
+.tbl span:not(.r){font-weight:700}
+.tbl .r{font:400 .95rem/1.4 var(--ui);color:var(--muted)}
+.steps{margin:6px 0 10px;padding-left:1.3em}
+.steps li{margin-bottom:6px}
+.steps li::marker{font-weight:700;color:var(--red)}
+.better{padding-left:1.1em;margin:6px 0 0}
+.better li{margin-bottom:8px}
+details{border-top:2px dashed var(--line);padding:10px 0;margin-top:8px}
+summary{cursor:pointer;font:700 .9rem var(--ui);letter-spacing:.04em;text-transform:uppercase}
+details .rule{margin-top:12px}
+.stat{margin:4px 0}
+.stat b{background:var(--tape);color:#151515;padding:0 4px}
+
+.drill{font:400 1.35rem/1.9 var(--type);margin:4px 0 12px}
+.gloss{font:600 .75em/1 var(--ui);color:#151515;background:var(--tape);border:2px solid #151515;padding:.2em .5em;white-space:nowrap;vertical-align:middle;display:inline-block;transform:rotate(-1deg)}
+.ruq{font:600 1.25rem/1.45 var(--ui);margin:6px 0 12px;padding:10px 12px;background:var(--tape);color:#151515;border:2px solid #151515}
+.mine{list-style:none;padding:0;margin:8px 0 0}
+.mine li{font:400 1.12rem/1.45 var(--type);padding:10px 0;border-top:2px dashed var(--line)}
+.mine .was{text-decoration:line-through 2px var(--red)}
+.mine .now{font-family:var(--marker);color:var(--red)}
+.mine .arr{font:700 .9rem var(--ui);color:var(--muted);margin:0 8px}
+.mine .why{font:400 .93rem/1.45 var(--ui);color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Работа над ошибками</h1>
+    <p>Твой текст «History of the Sea Shepherd».</p>
+    <div class="chips" id="chips"></div>
+    <div id="progress"></div>
+  </header>
+  <div class="page" id="page" hidden></div>
+  <div class="panel" id="panel" aria-live="polite"></div>
+</div>
+<script>
+const T = s => s.split(' ');
+
+/* ---------- topics: rule + drills ---------- */
+const TOPICS = [
+  {id:'ff', short:'Слова-ловушки', title:'kill, film, found', term:'Это называется: слова, которые легко перепутать',
+    body:'Эти слова похожи друг на друга или на русские, но значат разное. В текстах про активизм и съёмку они меняют смысл сильнее всего.',
+    table:[['murder','убийство человека, преступление'],['kill, the killing of…','убивать, убийство (и животных тоже)'],['shoot','стрелять'],['film','снимать на камеру'],['found (find – found)','нашёл'],['founded (found – founded)','основал'],['interesting','интересный'],['interested','заинтересован']],
+    ex:['Hunters <b>kill</b> whales. <span>убивают</span>','She <b>filmed</b> the protest. <span>сняла на камеру</span>','He <b>founded</b> the shelter in 2010. <span>основал</span>','I am <b>interested</b> in documentaries. <span>мне интересно</span>'],
+    tip:'«Убийство китов» как явление — the killing of whales. shoot тоже может значить «снимать», но рядом с охотой и оружием его поймут как «стрелять».',
+    drills:[
+      {pre:'Activists protest against', ru:'убийство китов', post:'.', acc:['the killing of whales','killing whales','whale killing','the killing of the whales'], hint:'murder — только про людей. Возьми killing.'},
+      {pre:'She', ru:'сняла', post:'the protest on her phone.', acc:['filmed','recorded'], hint:'Снимать на камеру — не shoot. И время прошедшее.'},
+      {pre:'They', ru:'основали', post:'the shelter in 2015.', acc:['founded'], hint:'found — это «нашли». «Основали» длиннее на две буквы.'},
+      {pre:'I', ru:'заинтересована', post:'in animal rights.', acc:['am interested'], hint:'interesting — «интересный». И нужен глагол am.'}]},
+  {id:'tense', short:'Прошедшее время', title:'Рассказ в прошлом', term:'Это называется: Past Simple',
+    body:'Когда рассказываешь историю, которая уже закончилась, все действия стоят в прошедшем времени, от первого до последнего. У правильных глаголов это -ed, у неправильных — вторая форма.',
+    table:[['have','had'],['take','took'],['show','showed'],['ask','asked'],['say','said'],['leave','left']],
+    ex:['They <b>had</b> a plan.','Nobody <b>came</b>.','The journalist <b>asked</b> a question.'],
+    tip:'После didn\'t глагол возвращается в первую форму: didn\'t take, didn\'t have.',
+    drills:[
+      {pre:'In 2020 the shelter', ru:'имел', post:'only two volunteers.', acc:['had'], hint:'have в прошедшем времени.'},
+      {pre:'Nobody', ru:'взял', post:'the leaflets.', acc:['took'], hint:'take — неправильный глагол.'},
+      {pre:'The journalist', ru:'спросил', post:'him about the ship.', acc:['asked'], hint:'ask — правильный глагол: -ed.'},
+      {pre:'Later they', ru:'показали', post:'the video to the world.', acc:['showed'], hint:'show — правильный глагол: -ed.'}]},
+  {id:'prep', short:'Предлоги', title:'of, at и без предлога', term:'Это называется: предлоги в устойчивых сочетаниях',
+    body:'«Один из», «самый … из них» — всегда of, не from. «В то время», «на конференции» — at. А с that day, the next year, last week предлог не нужен совсем.',
+    ex:['one <b>of</b> the three <span>один из трёх</span>','the best <b>of</b> them <span>лучший из них</span>','<b>at</b> the time <span>в то время</span>','<b>at</b> a press conference <span>на пресс-конференции</span>','<b>that</b> day, <b>the next</b> year <span>без предлога</span>'],
+    drills:[
+      {pre:'She is', ru:'одна из двух', post:'editors.', acc:['one of the two','one of two'], hint:'«Одна из» — of.'},
+      {pre:'I met him', ru:'на конференции', post:'.', acc:['at a conference','at the conference'], hint:'Предлог at. И не забудь артикль.'},
+      {pre:'', ru:'В тот день', post:'it rained.', acc:['that day','on that day'], hint:'Предлог in здесь не нужен: that day.'},
+      {pre:'We moved to Yerevan', ru:'в следующем году', post:'.', acc:['the next year','next year','the following year'], hint:'Без предлога in.'}]},
+  {id:'article', short:'Артикли', title:'a и the: ещё раз', term:'Это называется: артикли',
+    body:'Правило ты уже знаешь: исчисляемое слово в единственном числе не стоит «голым». Три случая из этого текста: the перед most; a перед новым предметом, даже если между ними прилагательное; the, когда понятно, какой именно.',
+    ex:['<b>the</b> most radical activist','It\'s <b>a</b> tradition.','He didn\'t have <b>an</b> answer.','<b>the</b> leader of the group'],
+    tip:'Названия организаций Greenpeace и Sea Shepherd идут без артикля, как имена.',
+    drills:[
+      {pre:'It was', ru:'самый трудный', post:'day of my life.', acc:['the hardest','the most difficult'], hint:'Перед превосходной степенью всегда the.'},
+      {pre:'I don\'t have', ru:'ответ', post:'.', acc:['an answer','the answer'], hint:'answer начинается с гласного звука.'},
+      {pre:'We have', ru:'очень сильная команда', post:'.', acc:['a very strong team','a really strong team'], hint:'Команда — одна из многих. Артикль стоит перед very.'},
+      {pre:'It is', ru:'традиция', post:'in my family.', acc:['a tradition'], hint:'Одна из многих традиций.'}]},
+  {id:'to', short:'want to, can', title:'want to, need to, can', term:'Это называется: глагол после глагола',
+    body:'После want, need, decide второй глагол идёт с to. После can, could, must, should — без to. Форма на -ing после них не ставится.',
+    ex:['I want <b>to film</b> it.','You need <b>to have</b> experience.','They decided not <b>to interfere</b>.','Many people can <b>film</b>.'],
+    drills:[
+      {pre:'I', ru:'хочу снимать', post:'documentaries.', acc:['want to film','want to make','want to shoot'], hint:'После want — to и глагол.'},
+      {pre:'For this job you', ru:'нужно знать', post:'English.', acc:['need to know','need to speak','have to know','must know'], hint:'После need — to и глагол.'},
+      {pre:'My sister', ru:'умеет монтировать', post:'videos.', acc:['can edit'], hint:'После can — глагол без to и без -ing.'}]}
+];
+TOPICS.splice(0, TOPICS.length, ...['article','prep'].map(id => TOPICS.find(t => t.id===id)));
+const TOPIC = {}; TOPICS.forEach(t => TOPIC[t.id] = t);
+
+/* ---------- her text ---------- */
+/* R(find, answer, topic, extra): replace the n-th occurrence of the token sequence `find`.
+   I(before, answer, topic, extra): insert before the n-th occurrence of token `before`. */
+const R = (find, answer, topic, x={}) => ({kind:'R', find, answer, topic, ...x});
+const I = (before, answer, topic, x={}) => ({kind:'I', find:before, answer, topic, ...x});
+const GP = 'Greenpeace пишется в одно слово и без артикля.';
+function U(text, specs, np){
+  const tokens = T(text);
+  const fixes = specs.map(s => {
+    const seq = T(s.find); let seen = 0, at = -1;
+    for(let i=0; i<=tokens.length-seq.length; i++){
+      if(seq.every((w,k) => tokens[i+k]===w)){ seen++; if(seen===(s.n||1)){ at = i; break; } }
+    }
+    if(at<0) throw new Error('not found: ' + s.find + ' in ' + text);
+    const f = {answer:s.answer, topic:s.topic};
+    if(s.accept) f.accept = s.accept; if(s.hint) f.hint = s.hint; if(s.why) f.why = s.why; if(s.fb) f.fb = s.fb; if(s.key) f.key = true;
+    return s.kind==='I' ? {type:'insert', gap:at, ...f} : {type:'replace', from:at, to:at+seq.length-1, ...f};
+  });
+  return {tokens, fixes, np:!!np};
+}
+const KILLS = ['the killings','the killing','killings','the hunt','the hunting','the seal hunt','the slaughter'];
+const FB_ART = [[/^a$/, 'Маленькое слово нужно, но другое: здесь понятно, о чём именно речь.'], [/^the$/, 'Маленькое слово нужно, но другое: это «один из многих», а не «тот самый».']];
+const KILL_HINT = 'murder — это убийство человека. Про животных — другое слово.';
+
+const DISPLAY = [
+  U('History of the Sea Shepherd originated on the time when Paul Watson was part of Green Peace .', [
+    R('History of the Sea Shepherd originated', 'The history of Sea Shepherd began', 'minor', {why:'«История началась» — The history … began. Sea Shepherd как название идёт без артикля.'}),
+    R('on', 'at', 'prep', {hint:'«В то время, когда…» — другой предлог.'}),
+    R('Green Peace', 'Greenpeace', 'minor', {why:GP})]),
+  U('Paul Watson was one from three gays who with Green Peace began , and most radical from them .', [
+    R('from', 'of the', 'prep', {accept:['of the','of'], fb:[[/^(from|out of|among)/, 'По-русски «из», но по-английски здесь не from.']], hint:'«Один из трёх»: предлог переведён с русского слово в слово.'}),
+    R('gays', 'guys', 'minor', {key:true, why:'guys — «парни». gays — «геи»: одна буква меняет смысл.'}),
+    R('with Green Peace began', 'started Greenpeace', 'minor', {why:'Порядок слов: сначала глагол, потом что именно начали.'}),
+    I('most', 'the', 'article', {fb:[[/^an?$/, 'Перед most всегда одно и то же маленькое слово, и это не a.']], hint:'«Самый радикальный»: перед most не хватает маленького слова.'}),
+    R('from', 'of', 'prep', {n:2, hint:'«Самый радикальный из них»: тот же предлог, что в «один из».'})]),
+  U('Green Peace was doing protests against murders seals for fur and fun in Canada .', [
+    R('Green Peace', 'Greenpeace', 'minor'),
+    R('doing protests', 'protesting', 'minor', {why:'protest — это и глагол: was protesting.'}),
+    R('murders seals', 'the killing of seals', 'ff', {key:true, why:'murder — это убийство человека. Про животных — killing: the killing of seals.', accept:['the killing of seals','killing seals','the killing of the seals','killing of seals','the seal hunt','seal hunting','the hunting of seals','hunting seals','the slaughter of seals'], fb:[[/^(the )?killing seals?$|^seals? killing$/, 'Слово верное. Собери фразу: the killing of …']], hint:KILL_HINT + ' Как сказать «убийство тюленей»?'})], true),
+  U('They have paint for seals fur : with colour fur seals would’t be interesting for hunters for fur .', [
+    R('have', 'had', 'tense', {fb:[[/^haved$/, 'have — неправильный глагол, -ed к нему не добавляют.'],[/^has$/, 'Это настоящее время, а история уже закончилась.']], hint:'Рассказ идёт в прошлом. В каком времени этот глагол?'}),
+    R('seals fur', 'the seals’ fur', 'minor', {why:'«Мех тюленей» — the seals\' fur, с апострофом.'}),
+    R('colour fur seals would’t', 'coloured fur, the seals wouldn’t', 'minor', {why:'«С крашеным мехом» — coloured fur. В wouldn\'t не хватало буквы n.'})]),
+  U('But local people protested against Green Peace and said that it is tradition .', [
+    R('Green Peace', 'Greenpeace', 'minor'),
+    R('is', 'was', 'minor', {why:'В рассказе о прошлом после said обычно ставят was.'}),
+    I('tradition', 'a', 'article', {fb:[[/^the$/, 'Не «та самая», а «одна из традиций».'],[/^an$/, 'tradition начинается с согласного звука.']], hint:'Одна из традиций: перед tradition не хватает маленького слова.'})]),
+  U('Leader Green Peace Bob Hunter said on press-conference : ok , we won’t bother local people do what they want , but if you interesting , we will have paint , and you would safe seals , you can take a paint from us .', [
+    R('Leader Green Peace', 'The leader of Greenpeace', 'article', {accept:['the leader of greenpeace','the leader of green peace','the greenpeace leader','greenpeace leader','greenpeace\'s leader','the head of greenpeace'], fb:[[/^leader of/, 'Почти. Не хватает маленького слова в самом начале.'],[/^the leader green ?peace$/, 'Почти. Между leader и Greenpeace нужен of.'],[/the green ?peace/, 'Перед Greenpeace артикль не нужен: это название.']], hint:'«Лидер Гринписа»: лидер один, понятно какой. И между словами нужен of.'}),
+    R('on press-conference', 'at a press conference', 'prep', {accept:['at a press conference','at a press-conference','at the press conference','at the press-conference'], fb:[[/^at press/, 'Предлог верный. Теперь добавь артикль перед press conference.'],[/^(on|in) /, 'Артикль проверь потом, сначала предлог: не on и не in.']], hint:'«На пресс-конференции»: предлог другой. И не забудь артикль.'}),
+    R('bother local people do', 'stop local people from doing', 'minor', {why:'«Мешать кому-то делать» — stop someone from doing.'}),
+    R('interesting', 'are interested', 'ff', {key:true, why:'interesting — «интересный». «Вы заинтересованы» — you are interested.', accept:['are interested','\'re interested','\'re interested in it','are interested in it'], fb:[[/^interested$/, 'Слово верное. Не хватает глагола: you … interested.'],[/interesting/, 'interesting — «интересный», так говорят о вещи. О человеке — другое окончание.']], hint:'interesting — «интересный». А как «вы заинтересованы»? И не хватает глагола.'}),
+    R('you would safe seals', 'if you want to save the seals', 'minor', {key:true, why:'safe — «безопасный». «Спасать» — save.'}),
+    R('a paint', 'the paint', 'minor', {why:'paint неисчисляемое, a с ним не ставится. Здесь та самая краска — the paint.'})]),
+  U('No one take the paint .', [
+    R('take', 'took', 'tense', {fb:[[/^taked$/, 'take — неправильный глагол, -ed к нему не добавляют.'],[/^takes$/, 'Это настоящее время, а история уже закончилась.']], hint:'Это уже случилось. take — неправильный глагол.'})]),
+  U('In the next year it happened again .', [
+    R('In the next year', 'The next year', 'prep', {accept:['the next year','next year','the following year'], hint:'С next year предлог не нужен.'})], true),
+  U('Green Peace decided not to interfere , and only shooted murders on the camera , and later show to the world .', [
+    R('Green Peace', 'Greenpeace', 'minor'),
+    R('shooted', 'filmed', 'ff', {key:true, why:'shoot рядом с убийствами прочтут как «стреляли». Снимать на камеру — film.', accept:['filmed','recorded','videoed'], fb:[[/^shot$/, 'Форма правильная, но shot the killings прочтут как «расстреляли». Возьми слово от film.'],[/shoot/, 'shoot здесь прочтут как «стреляли». И форма shooted не существует.'],[/^film(s|ing)?$/, 'Слово верное. Поставь его в прошедшее время.']], hint:'shoot здесь прочтут как «стреляли». Как «снимали на камеру»?'}),
+    R('murders', 'the killings', 'ff', {accept:KILLS, hint:KILL_HINT}),
+    R('on the camera', 'on camera', 'minor', {why:'«На камеру» — on camera, без артикля.'}),
+    R('show', 'showed them', 'tense', {accept:['showed them','showed it','showed','showed the video','showed the film'], fb:[[/^shown/, 'shown — третья форма. Здесь нужна вторая.'],[/^shows$/, 'Это настоящее время, а история уже закончилась.']], hint:'Рассказ в прошлом, а этот глагол остался в настоящем.'})]),
+  U('But Paul Watson didn’t wont just shooting murders , he chained himself to anchor ship who transported hunters .', [
+    R('wont', 'want to', 'to', {accept:['want to'], fb:[[/^want$/, 'Слово верное. После want перед следующим глаголом нужно маленькое слово.'],[/^wont to$/, 'to на месте. Теперь проверь само слово: wont — другое.']], hint:'Две вещи: wont — другое слово. И после want перед глаголом нужно маленькое слово.'}),
+    R('just shooting', 'just film', 'ff', {accept:['just film','just record','only film','only record','film','record'], fb:[[/shoot/, 'shoot здесь прочтут как «стрелять». Возьми film.'],[/(film|record)ing$/, 'Слово верное. После want to глагол идёт без -ing.']], hint:'shoot рядом с убийствами прочтут как «стрелять». И после want to глагол идёт без -ing.'}),
+    R('murders', 'the killings', 'ff', {accept:KILLS, hint:KILL_HINT}),
+    I('anchor', 'the', 'article', {fb:[[/^an?$/, 'Не «какой-то якорь», а якорь того самого корабля.']], hint:'Якорь того самого корабля: перед anchor не хватает маленького слова.'}),
+    I('hunters', 'the', 'article', {fb:FB_ART, hint:'Это те самые охотники, о которых уже шла речь. Перед hunters не хватает маленького слова.'}),
+    R('ship who', 'of the ship that', 'minor', {why:'«Якорь корабля» — the anchor of the ship. Про корабль говорят that, а who — только про людей.'})]),
+  U('In this day Bob Hunter was on TV and newcaster ask him : what you can say about your man who chained himself to anchor ?', [
+    R('In this day', 'That day', 'prep', {accept:['that day','on that day','on this day'], hint:'«В тот день»: предлог in здесь не нужен.'}),
+    R('newcaster', 'the newscaster', 'minor', {why:'newscaster — с буквой s и с артиклем the.'}),
+    R('ask', 'asked', 'tense', {fb:[[/^asks$/, 'Это настоящее время, а история уже закончилась.']], hint:'Рассказ в прошлом, а этот глагол остался в настоящем.'}),
+    R('what you can say', 'what can you say', 'minor', {key:true, why:'В вопросе can стоит перед you.'}),
+    I('anchor', 'an', 'article', {accept:['an','the'], fb:[[/^a$/, 'Почти. anchor начинается с гласного звука.']], hint:'Перед anchor не хватает маленького слова. Слово начинается с гласного звука.'})]),
+  U('Hunter didn’t have answer because he knew about this situation in live .', [
+    I('answer', 'an', 'article', {accept:['an','the'], fb:[[/^a$/, 'Почти. answer начинается с гласного звука.']], hint:'Перед answer не хватает маленького слова. Слово начинается с гласного звука.'}),
+    R('knew about this situation in live', 'found out about this situation live on air', 'minor', {key:true, why:'«Узнал» — found out. «В прямом эфире» — live on air.'})]),
+  U('Watson was dunked on the ice water and him crushed arm .', [
+    R('on the ice water', 'in the icy water', 'minor', {why:'«В воду» — in. «Ледяная» — icy.'}),
+    R('him crushed arm', 'his arm was crushed', 'minor', {key:true, why:'«Ему раздавило руку» — his arm was crushed.'})]),
+  U('Other members The Green peace decided Paul Watson should not be part of Green Peace because it’s reputation risk .', [
+    R('Other members The Green peace', 'The other members of Greenpeace', 'minor', {why:'«Остальные члены Гринписа» — the other members of Greenpeace.'}),
+    R('Green Peace', 'Greenpeace', 'minor'),
+    R('it’s reputation risk', 'it was a risk to its reputation', 'minor', {why:'«Риск для репутации» — a risk to its reputation.'})]),
+  U('They organize vote for participation Paul Watson .', [
+    R('organize', 'organised', 'tense', {accept:['organised','organized','held','had'], fb:[[/^organi[sz]es$/, 'Это настоящее время, а история уже закончилась.']], hint:'Рассказ в прошлом, а этот глагол остался в настоящем.'}),
+    R('vote for participation Paul Watson', 'a vote on Paul Watson’s membership', 'minor', {why:'«Голосование о членстве» — a vote on … membership.'})]),
+  U('In the vote participants eleven people , include Watson .', [
+    R('In the vote participants eleven people , include Watson', 'Eleven people took part in the vote, including Watson', 'minor', {key:true, why:'«Участвовать» — take part. «Включая» — including.'})]),
+  U('Ten voted against Watson .', []),
+  U('One man voted for Watson – it was Watson himself .', []),
+  U('Watson left Green Peace and found The Sea Shepherd .', [
+    R('Green Peace', 'Greenpeace', 'minor'),
+    R('found The Sea Shepherd', 'founded Sea Shepherd', 'ff', {key:true, why:'found — это «нашёл». «Основал» — founded.', accept:['founded sea shepherd','founded the sea shepherd','started sea shepherd','created sea shepherd','set up sea shepherd'], fb:[[/^found(ed)?$/, 'Напиши вместе с названием: … Sea Shepherd.'],[/^found /, 'found — это «нашёл». «Основал» на две буквы длиннее.'],[/^finded/, '«Основал» — не от find. Это другой глагол: found – founded.']], hint:'found — это «нашёл». Как «основал»? И название идёт без артикля.'})], true),
+  U('WIth his rules : only vegan food , radical against murders in the Sea .', [
+    R('WIth', 'With', 'minor'),
+    R('Sea', 'sea', 'minor'),
+    R('radical against murders', 'radical action against killing', 'minor', {why:'radical — прилагательное, ему нужно существительное: radical action. И снова killing вместо murders.'})]),
+  U('Paul Watson found many supporters , volunters and really strong team .', [
+    R('volunters', 'volunteers', 'minor', {why:'volunteers — с двумя e.'}),
+    I('really', 'a', 'article', {fb:[[/^the$/, 'Команда здесь упоминается впервые: «одна из многих».'],[/^an$/, 'really начинается с согласного звука.']], hint:'Команда — одна из многих. Перед really strong не хватает маленького слова.'})]),
+  U('First off all , Sea Shepherd doing calling public attention .', [
+    R('off', 'of', 'minor', {why:'«Прежде всего» — first of all. off — другое слово.'}),
+    R('doing calling', 'attracts', 'minor', {why:'«Привлекает внимание» — attracts attention.'})]),
+  U('They show how brutal and senseless murders sea animals .', [
+    R('murders sea animals', 'the killing of sea animals is', 'ff', {accept:['the killing of sea animals is','killing sea animals is','the killing of the sea animals is','killing of sea animals is','the killing of marine animals is','the hunting of sea animals is','hunting sea animals is','the slaughter of sea animals is'], fb:[[/^(the )?(killing|hunting|slaughter)( of)?( the)? (sea|marine) animals$/, 'Слово верное. Теперь добавь в конце глагол: how brutal … is.']], hint:KILL_HINT + ' И в конце не хватает глагола is.'})]),
+  U('For volunteering on the Sea Sheperd you need have special skills like marine mechanic or cameramen skills – but in our time many people could shooting .', [
+    R('For volunteering on the Sea Sheperd', 'To volunteer on a Sea Shepherd ship,', 'minor', {why:'«Чтобы стать волонтёром» — to volunteer. Shepherd пишется с h.'}),
+    R('cameramen skills', 'camera skills', 'minor', {why:'«Навыки оператора» — camera skills.'}),
+    R('need have', 'need to have', 'to', {fb:[[/having/, 'После need — to и глагол в первой форме, без -ing.']], hint:'После need второй глагол идёт с маленьким словом.'}),
+    R('could shooting', 'can film', 'to', {accept:['can film','could film','can shoot','can shoot video','can shoot videos','can film things','can make videos','can make video','can film videos','can record','can record video','can record videos','can use a camera'], fb:[[/ing$/, 'После can и could глагол идёт без -ing.'],[/(can|could) to /, 'После can и could to не нужен.']], hint:'После can и could — глагол без to и без -ing.'})])
+];
+
+DISPLAY.forEach(u => u.fixes.forEach(f => { if(f.topic!=='minor' && !TOPIC[f.topic]) f.topic = 'minor'; }));
+
+const BETTER = [
+  '«in our time» → «nowadays»: так обычно говорят «в наше время».',
+  '«for hunters for fur» → «for hunters»: второе for fur можно убрать, смысл уже понятен.',
+  'Слова Боба Хантера и вопрос ведущего можно взять в кавычки.'
+];
+
+/* ---------- mixed round: whole sentences, all topics, no highlighted chunk ---------- */
+const MIX_ALL = [
+  {ru:'Он основал приют в 2015 году.', model:'He founded the shelter in 2015.',
+    bad:[[/\bfinded\b|\bfound\b/, '«Основал» — не found. found — это «нашёл».']],
+    keys:[[/\b(founded|started|set up|created|opened)\b/, 'Проверь глагол «основал».'], [/\b(a|the|this) (animal )?shelter\b/, 'Перед shelter не хватает артикля.']]},
+  {ru:'В тот день никто не снимал протест.', model:'That day nobody filmed the protest.',
+    bad:[[/\bin (this|that) day\b/, '«В тот день»: предлог in здесь не нужен.'], [/\bshoo?t(ed)?\b/, 'shoot the protest прочтут как «стрелять». Возьми film.'], [/\bdid(n't| not)\b/, 'С nobody отрицание уже есть: nobody filmed, без didn\'t.']],
+    keys:[[/\b(that|this) day\b/, 'Как сказать «в тот день»?'], [/\b(filmed|recorded)\b/, 'Проверь глагол «снимал»: слово и время.'], [/\b(the|a) protest\b/, 'Перед protest не хватает артикля.']]},
+  {ru:'Она одна из самых известных активисток.', model:'She is one of the most famous activists.',
+    bad:[[/\bone from\b/, '«Одна из» — не from.']],
+    keys:[[/\bshe( i|')s\b/, 'Не хватает глагола: She … one of.'], [/\bone of\b/, 'Как сказать «одна из»?'], [/\bthe (most|best)\b/, 'Перед most нужно the.'], [/\bactivists\b/, 'После one of существительное стоит во множественном числе.']]},
+  {ru:'Я хочу снять документальный фильм о тюленях.', model:'I want to make a documentary about seals.',
+    bad:[[/\bcinema\b/, 'cinema — это кинотеатр.'], [/\bwant (make|film|shoot)/, 'После want перед глаголом нужно to.']],
+    keys:[[/\bwant to (make|film|shoot|create)\b/, 'Проверь «хочу снять»: want и второй глагол.'], [/\ba (documentary|film|movie)\b/, 'Перед documentary не хватает артикля.'], [/\bseals\b/, 'Тюлени — seals.']]},
+  {ru:'Активисты протестуют против убийства китов.', model:'Activists protest against the killing of whales.',
+    bad:[[/murder/, 'murder — это убийство человека. Про животных — killing.']],
+    keys:[[/\bprotest(s|ing)?\b/, 'Проверь глагол «протестуют».'], [/\b(killing|hunting|slaughter)\b/, 'Как сказать «убийство» про животных?'], [/\bwhales?\b/, 'Киты — whales.']]},
+  {ru:'В следующем году они показали видео на пресс-конференции.', model:'The next year they showed the video at a press conference.',
+    bad:[[/\bin (the )?next year\b/, 'С next year предлог in не нужен.'], [/\bon (a |the )?press/, '«На пресс-конференции» — не on.']],
+    keys:[[/\b(next|following) year\b/, 'Как сказать «в следующем году»?'], [/\bshowed\b/, 'Проверь глагол «показали»: время прошедшее.'], [/\b(the|a) video\b/, 'Перед video не хватает артикля.'], [/\bat (a|the) press[- ]conference\b/, 'Проверь «на пресс-конференции»: предлог at и артикль.']]},
+  {ru:'Многие люди умеют снимать видео.', model:'Many people can film videos.',
+    bad:[[/\bcan to\b/, 'После can to не нужен.'], [/\bcan \w+ing\b/, 'После can глагол идёт без -ing.'], [/\bpeoples\b/, 'people уже во множественном числе, -s не нужно.']],
+    keys:[[/\b(many|a lot of|lots of) people\b/, 'Проверь «многие люди».'], [/\b(can|know how to) (film|shoot|make|record)\b/, 'Проверь «умеют снимать»: can и глагол.']]},
+  {ru:'Мне интересны права животных.', model:'I am interested in animal rights.',
+    bad:[[/\binteresting\b/, 'interesting — «интересный». О себе — interested.'], [/\banimals rights\b/, 'animal описывает rights и стоит без -s.']],
+    keys:[[/\b(i am|i'm) (really |very )?interested in\b/, 'Проверь начало: I am interested in …'], [/\banimal rights\b/, 'Права животных — animal rights.']]}
+];
+
+const MIX = [2, 5, 0, 1, 3].map(i => MIX_ALL[i]);
+
+/* ---------- helpers ---------- */
+const FIXES = [];
+DISPLAY.forEach((u,ui) => u.fixes.forEach((f,j) => { f.id = `u${ui}f${j}`; f.u = ui; if(!f.accept) f.accept = [f.answer]; FIXES.push(f); }));
+const PARA = []; { let p = 0; DISPLAY.forEach((u,ui) => { if(ui>0 && u.np) p++; PARA[ui] = p; }); }
+const pos = f => f.type==='insert' ? f.gap - 0.5 : f.from;
+const fixesOf = id => FIXES.filter(f => f.topic===id).sort((a,b) => a.u-b.u || pos(a)-pos(b));
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const isP = t => /^[.,!?;:]$/.test(t);
+const startsP = t => /^[.,!?;:]/.test(t);
+const join = arr => arr.reduce((a,t,i) => i===0 ? t : a + (startsP(t)?'':' ') + t, '');
+const norm = s => s.toLowerCase().replace(/[’`]/g,"'").replace(/[“”"«»]/g,'').replace(/[.!?,;:]+$/,'').replace(/\s+/g,' ').trim();
+const sep = (u,ui,para) => ui===0 ? '' : u.np ? para : startsP(u.tokens[0]) ? '' : ' ';
+
+function clean(u){
+  const out = [];
+  u.tokens.forEach((t,i) => {
+    const ins = u.fixes.find(f => f.type==='insert' && f.gap===i);
+    if(ins) out.push(ins.answer);
+    const rep = u.fixes.find(f => f.type==='replace' && f.from<=i && i<=f.to);
+    if(rep){ if(i===rep.from) out.push(rep.answer); } else out.push(t);
+  });
+  return join(out);
+}
+const fullText = () => DISPLAY.map((u,ui) => sep(u,ui,'\n\n') + clean(u)).join('');
+const speechText = () => DISPLAY.filter(u => !u.skip).map(clean).join(' ');
+const capAfter = (pre, s) => (!pre || /[.!?]$/.test(pre)) ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+const drillLine = (d, ans) => [d.pre, capAfter(d.pre, ans), d.post].filter(Boolean).reduce((a,p) => a ? a + (startsP(p)?'':' ') + p : p, '');
+
+/* ---------- state ---------- */
+const KEY = 'lilian-sea-shepherd-v3';
+let st;
+function reset(){
+  st = {stage:'intro', ti:0, phase:'learn', di:0, dTries:0, dOk:false, dAns:'', dMsg:'', dr:{}, fx:{},
+        open:null, reveal:null, pulse:null, msg:'', ok:false, hint:0, misses:0,
+        mi:0, mTries:0, mOk:false, mAns:'', mMsg:'', mx:{}, rev:{}};
+  FIXES.forEach(f => st.fx[f.id] = {done:false, attempts:0, hinted:false, status:null});
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({...st, open:null, reveal:null, pulse:null, msg:'', dMsg:''})); }catch(e){}
+}
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if(!d || !d.fx || !FIXES.every(f => d.fx[f.id])) return;
+    st = {...st, ...d, open:null, reveal:null, pulse:null};
+  }catch(e){}
+}
+const topic = () => TOPICS[st.ti];
+const left = () => fixesOf(topic().id).filter(f => !st.fx[f.id].done);
+
+/* ---------- rendering ---------- */
+function unitHTML(u, ui, live){
+  let h = ''; const tk = u.tokens;
+  for(let i=0; i<tk.length; ){
+    if(i>0 && !isP(tk[i])){
+      const ins = u.fixes.find(f => f.type==='insert' && f.gap===i && st.fx[f.id].done);
+      if(ins) h += `<span class="gap ins"><span class="caret">∧</span><span class="above">${esc(ins.answer)}</span></span><wbr>`;
+      else if(live) h += `<span class="gap tap" data-u="${ui}" data-g="${i}" role="button" tabindex="0" aria-label="промежуток между словами"><span class="dot"></span></span><wbr>`;
+      else h += ' ';
+    }
+    const rf = u.fixes.find(f => f.type==='replace' && f.from===i && st.fx[f.id].done);
+    if(rf){
+      const txt = join(tk.slice(rf.from, rf.to+1));
+      h += rf.answer.length>22
+        ? `<span class="seg fixed long"><span class="orig">${esc(txt)}</span> <span class="neu">${esc(rf.answer)}</span></span>`
+        : `<span class="seg fixed"><span class="orig">${esc(txt)}</span><span class="above">${esc(rf.answer)}</span></span>`;
+      i = rf.to + 1; continue;
+    }
+    h += live ? `<span class="seg tap" data-u="${ui}" data-i="${i}" role="button" tabindex="0">${esc(tk[i])}</span>`
+              : `<span class="seg">${esc(tk[i])}</span>`;
+    i++;
+  }
+  return `<span class="sent${u.skip?' ru':''}">${h}</span>`;
+}
+
+function targets(f){
+  if(f.type==='insert') return $$(`.gap[data-u="${f.u}"][data-g="${f.gap}"]`);
+  const out = []; for(let i=f.from; i<=f.to; i++) out.push(...$$(`.seg[data-u="${f.u}"][data-i="${i}"]`));
+  return out;
+}
+
+function renderHead(){
+  const done = i => st.stage==='mix' || st.stage==='minor' || st.stage==='final' || (st.stage==='topic' && i<st.ti);
+  $('#chips').innerHTML = TOPICS.map((t,i) => `<span class="chip${done(i)?' done':''}${st.stage==='topic'&&i===st.ti?' cur':''}">${i+1}. ${esc(t.short)}</span>`).join('');
+  const pr = $('#progress');
+  if(st.stage==='topic'){
+    const t = topic();
+    const ph = st.phase==='learn' ? 'Шаг 1 из 3: правило' : st.phase==='hunt' ? 'Шаг 2 из 3: найди ошибки в тексте' : `Шаг 3 из 3: перевод ${st.di+1} из ${t.drills.length}`;
+    pr.textContent = `Тема ${st.ti+1} из ${TOPICS.length}. ${ph}`;
+  } else if(st.stage==='mix') pr.textContent = `Всё вместе: предложение ${st.mi+1} из ${MIX.length}`;
+  else if(st.stage==='minor') pr.textContent = 'Слова-ловушки и ещё несколько ошибок';
+  else if(st.stage==='final') pr.textContent = 'Готово';
+  else pr.textContent = '';
+}
+
+function renderPage(){
+  const p = $('#page');
+  const fin = st.stage==='final';
+  const show = (st.stage==='topic' && st.phase==='hunt') || fin;
+  p.hidden = !show;
+  if(!show){ p.innerHTML = ''; return; }
+  p.innerHTML = (fin ? '<h2>мои ошибки</h2><p class="legend"><span class="lg-was">зачёркнуто</span> — как было, <span class="lg-now">красным</span> — как правильно, <span class="lg-ins">∧</span> — пропущенное слово</p>' : '<h2>history</h2>')
+    + '<p class="text">' + DISPLAY.map((u,ui) => sep(u,ui,'</p><p class="text">') + unitHTML(u, ui, !fin && !u.skip)).join('') + '</p>';
+  if(st.open) targets(st.open).forEach(el => el.classList.add('sel'));
+  if(st.pulse) targets(st.pulse).forEach(el => el.classList.add('pulse'));
+}
+
+function ruleHTML(t){
+  let h = `<div class="rule"><h3>${t.title}</h3><div class="term">${t.term}</div><p>${t.body}</p>`;
+  if(t.table) h += `<div class="tbl">${t.table.map(([a,b]) => `<span>${a}</span><span class="r">${b}</span>`).join('')}</div>`;
+  h += `<ul>${t.ex.map(e => `<li>${e}</li>`).join('')}</ul>`;
+  if(t.tip) h += `<p class="tip">${t.tip}</p>`;
+  return h + '</div>';
+}
+
+const canSpeak = 'speechSynthesis' in window;
+const speakBtn = t => canSpeak ? `<button class="speak" data-act="speak" data-text="${esc(t)}">Послушать</button>` : '';
+
+function topicStats(id){
+  const c = {self:0, hint:0, shown:0}; const all = fixesOf(id);
+  all.forEach(f => { const s = st.fx[f.id].status; if(s) c[s]++; });
+  return {...c, total:all.length};
+}
+function statsHTML(c){
+  return `<p class="stat">Нашла и исправила сама: <b>${c.self}</b> из ${c.total}</p><p class="stat">С подсказкой: <b>${c.hint}</b></p><p class="stat">Разобрали вместе: <b>${c.shown}</b></p>`;
+}
+
+function renderPanel(){
+  const p = $('#panel'); let h = '';
+  const msg = st.msg ? `<p class="msg${st.ok?' ok':''}">${st.msg}</p>` : '';
+  if(st.stage==='intro'){
+    h = `<p class="lead">Как это работает</p>
+      <p>Мы разберём две главные темы из твоего текста. В каждой теме три шага:</p>
+      <ol class="steps">
+        <li>Короткое правило.</li>
+        <li>Найди в своём тексте ошибки на эту тему и исправь их. Нажми на слово с ошибкой, а если слово пропущено, на точку между словами. Правильный вариант пишешь сама.</li>
+        <li>Переведи несколько коротких фраз.</li>
+      </ol>
+      <p>Потом — слова-ловушки и пять предложений на всё сразу. Это минут на двадцать.</p>
+      <p class="howto">В тексте есть и другие ошибки, их посмотрим в конце. Там же будет страница со всеми твоими ошибками, её удобно сохранить скриншотом. Можно делать перерывы: прогресс сохраняется в этом браузере.</p>
+      <div class="row"><button class="btn" data-act="start">Начать</button></div>`;
+  } else if(st.stage==='topic' && st.phase==='learn'){
+    const t = topic();
+    h = ruleHTML(t) + `<p class="count">В твоём тексте ошибок на эту тему: <b>${fixesOf(t.id).length}</b></p>
+      <div class="row"><button class="btn" data-act="hunt">Найти их в тексте</button></div>`;
+  } else if(st.stage==='topic' && st.phase==='hunt'){
+    const t = topic();
+    if(st.reveal){
+      const f = st.reveal;
+      h = `<p class="lead">Правильно так: <span class="hand red">${esc(f.answer)}</span></p><p>${f.hint}</p>
+        <div class="row"><button class="btn" data-act="ack">Понятно</button></div>`;
+    } else if(st.open){
+      const f = st.open, u = DISPLAY[f.u];
+      const orig = f.type==='replace' ? join(u.tokens.slice(f.from, f.to+1)) : '';
+      h = `<p class="lead">${f.type==='insert' ? 'Что здесь пропущено?' : `Как правильно вместо «${esc(orig)}»?`}</p>
+        <div class="type"><input id="ans" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="${f.type==='insert'?'пропущенное слово':'правильный вариант'}" aria-label="Твой ответ"><button class="btn" data-act="check">Проверить</button></div>
+        ${msg}<div class="row"><button class="btn ghost" data-act="back">Назад к тексту</button></div>`;
+    } else {
+      const all = fixesOf(t.id), l = left();
+      if(!l.length){
+        h = `${msg}<p class="lead">Все ошибки на тему «${t.title}» найдены</p>${statsHTML(topicStats(t.id))}
+          <div class="row"><button class="btn" data-act="drill">К переводу</button></div>`;
+      } else {
+        h = `<p class="count">Тема «${t.title}». Найдено <b>${all.length-l.length}</b> из <b>${all.length}</b></p>
+          <p class="howto">Нажми на слово с ошибкой. Если слово пропущено, нажми на точку между словами.</p>${msg}
+          <div class="row"><button class="btn ghost" data-act="hint">${['Подсказка','Ещё подсказка','Покажи, где ошибка'][Math.min(st.hint,2)]}</button></div>
+          <details><summary>Напомнить правило</summary>${ruleHTML(t)}</details>`;
+      }
+    }
+  } else if(st.stage==='topic' && st.phase==='drill'){
+    const t = topic(), d = t.drills[st.di], last = st.di===t.drills.length-1;
+    const line = [d.pre ? esc(d.pre) : '', `<span class="gloss">${esc(d.ru)}</span>`, d.post ? esc(d.post) : ''].filter(Boolean)
+      .reduce((a,p) => a ? a + (startsP(p)?'':' ') + p : p, '');
+    h = `<p class="howto">Напиши по-английски то, что в рамке.</p><p class="drill">${line}</p>`;
+    if(!st.dOk){
+      h += `<div class="type"><input id="dans" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="по-английски" aria-label="Перевод"><button class="btn" data-act="dcheck">Проверить</button></div>
+        ${st.dMsg ? `<p class="msg">${st.dMsg}</p>` : ''}`;
+    } else {
+      const full = drillLine(d, st.dAns);
+      const nextLabel = !last ? 'Дальше' : st.ti<TOPICS.length-1 ? `Следующая тема: ${TOPICS[st.ti+1].short}` : 'Слова-ловушки';
+      h += `${st.dMsg ? `<p class="msg ok">${st.dMsg}</p>` : ''}<p class="hand clean">${esc(full)}</p>${speakBtn(full)}
+        <div class="row"><button class="btn" data-act="dnext">${nextLabel}</button></div>`;
+    }
+  } else if(st.stage==='mix'){
+    const m = MIX[st.mi], last = st.mi===MIX.length-1;
+    h = `<p class="lead">Всё вместе</p><p class="howto">Переведи предложение целиком. Подсказок в нём нет.</p><p class="ruq">${esc(m.ru)}</p>`;
+    if(!st.mOk){
+      h += `<div class="type"><input id="mans" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="по-английски" aria-label="Перевод предложения"><button class="btn" data-act="mcheck">Проверить</button></div>
+        ${st.mMsg ? `<p class="msg">${st.mMsg}</p>` : ''}`;
+    } else {
+      h += `<p class="msg${st.mx[st.mi]==='shown'?'':' ok'}">${st.mMsg}</p>
+        <p class="howto">Твой вариант</p><p class="hand">${esc(st.mAns)}</p>
+        <p class="howto">Образец</p><p class="hand clean">${esc(m.model)}</p>${speakBtn(m.model)}
+        <div class="row"><button class="btn" data-act="mnext">${last ? 'Все мои ошибки и чистовик' : 'Дальше'}</button></div>`;
+    }
+  } else if(st.stage==='minor'){
+    const items = FIXES.filter(f => f.topic==='minor' && f.key);
+    h = `<p class="lead">Слова-ловушки</p><p>Здесь слова, которые меняют смысл, и ещё несколько важных ошибок. Сначала подумай, как правильно, потом открой ответ.</p>
+      <ul class="mine">${items.map(f => {
+        const u = DISPLAY[f.u];
+        const was = f.type==='replace' ? join(u.tokens.slice(f.from, f.to+1)) : join(u.tokens.slice(Math.max(0,f.gap-2), f.gap+1));
+        const now = f.type==='replace' ? f.answer : join([...u.tokens.slice(Math.max(0,f.gap-2), f.gap), f.answer, u.tokens[f.gap]]);
+        return st.rev[f.id]
+          ? `<li><span class="was">${esc(was)}</span><span class="arr">→</span><span class="now">${esc(now)}</span><div class="why">${f.why}</div></li>`
+          : `<li><span class="was">${esc(was)}</span> <button class="speak" data-act="rev" data-id="${f.id}">Как правильно?</button></li>`;
+      }).join('')}</ul>
+      <p class="howto" style="margin-top:12px">Остальные мелкие правки есть на следующей странице, где собраны все твои ошибки.</p>
+      <p class="lead" style="margin-top:16px">Можно ещё лучше</p>
+      <ul class="better">${BETTER.map(b => `<li>${esc(b)}</li>`).join('')}</ul>
+      <div class="row"><button class="btn" data-act="final">Дальше: пять предложений</button></div>`;
+  } else if(st.stage==='final'){
+    const firstTry = Object.values(st.dr).filter(s => s==='self').length;
+    const nDr = TOPICS.reduce((a,t) => a + t.drills.length, 0);
+    h = `<p class="howto">Наверху — твой текст со всеми ошибками и исправлениями. Его удобно сохранить скриншотом.</p><p class="lead">Чистовик</p><p class="hand clean">${esc(fullText())}</p>${speakBtn(speechText())}
+      <p class="lead" style="margin-top:16px">Как прошло</p>
+      ${TOPICS.map(t => { const c = topicStats(t.id); return `<p class="stat">${esc(t.short)}: нашла сама <b>${c.self}</b> из ${c.total}</p>`; }).join('')}
+      <p class="stat">Переводы с первой попытки: <b>${firstTry}</b> из ${nDr}</p>
+      <p class="stat">Целые предложения с первой попытки: <b>${Object.values(st.mx).filter(s => s==='self').length}</b> из ${MIX.length}</p>
+      <p class="lead" style="margin-top:16px">Правила</p>
+      ${TOPICS.map(t => `<details><summary>${t.title}</summary>${ruleHTML(t)}</details>`).join('')}
+      <div class="row"><button class="btn ghost" data-act="restart">Пройти заново</button></div>`;
+  }
+  p.innerHTML = h;
+  const inp = $('#ans') || $('#dans') || $('#mans');
+  if(inp){
+    inp.addEventListener('keydown', e => { if(e.key==='Enter') (inp.id==='ans' ? check() : inp.id==='dans' ? dcheck() : mcheck()); });
+    inp.focus({preventScroll:true});
+  }
+}
+
+function render(){ renderHead(); renderPage(); renderPanel(); $('#panel').classList.toggle('dock', st.stage==='topic' && st.phase==='hunt'); save(); }
+const toTop = () => window.scrollTo({top:0, behavior:'smooth'});
+
+/* ---------- hunt ---------- */
+function openFix(f){
+  if(st.misses>=3) st.fx[f.id].hinted = true;
+  st.misses = 0; st.open = f; st.msg = ''; st.ok = false; st.pulse = null;
+  render();
+  $('#panel').scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+function resolve(f, status, text){
+  const r = st.fx[f.id]; r.done = true; if(!r.status) r.status = status;
+  st.open = null; st.reveal = null; st.pulse = null; st.hint = 0;
+  const l = left().length;
+  st.msg = text + (l ? ` Осталось найти: ${l}.` : ''); st.ok = true;
+  render();
+}
+function feedback(f, v){
+  for(const [re, msg] of (f.fb || [])) if(re.test(v)) return msg;
+  if(f.topic==='ff' && /murder/.test(v)) return 'murder — это про убийство человека. Нужно слово от kill.';
+  if(f.type==='replace' && v===norm(join(DISPLAY[f.u].tokens.slice(f.from, f.to+1)))) return 'Это то, что уже написано в тексте. ' + f.hint;
+  return null;
+}
+function check(){
+  const f = st.open, r = st.fx[f.id], v = norm($('#ans').value);
+  if(!v){ st.msg = 'Напиши ответ в поле.'; st.ok = false; renderPanel(); return; }
+  if(f.accept.map(norm).includes(v)){ resolve(f, (r.attempts===0 && !r.hinted) ? 'self' : 'hint', 'Верно!'); return; }
+  r.attempts++; st.ok = false;
+  const fb = feedback(f, v);
+  if(r.attempts===1){ st.msg = fb || ('Не совсем. ' + f.hint); renderPanel(); }
+  else if(r.attempts===2){ st.msg = fb || `Ещё попытка. Начинается на «${esc(f.answer[0])}…».`; renderPanel(); }
+  else { r.status = 'shown'; st.reveal = f; st.open = null; render(); }
+}
+function hint(){
+  const f = left()[0]; if(!f) return;
+  st.fx[f.id].hinted = true; st.ok = false;
+  if(st.hint===0){ st.msg = `Посмотри на ${PARA[f.u]+1}-й абзац.`; st.hint = 1; render(); }
+  else if(st.hint===1){ st.pulse = f; st.msg = 'Ошибка в месте, обведённом красным.'; st.hint = 2; render(); }
+  else openFix(f);
+}
+function miss(el, text){
+  el.classList.remove('nope'); void el.offsetWidth; el.classList.add('nope');
+  st.misses++; st.ok = false;
+  st.msg = text + (st.misses>=3 ? ' Не торопись: перечитай текст медленно или возьми подсказку.' : '');
+  renderPanel();
+}
+function tap(el){
+  if(!(st.stage==='topic' && st.phase==='hunt') || st.open || st.reveal) return;
+  const ui = +el.dataset.u, u = DISPLAY[ui]; let f;
+  if(el.classList.contains('gap')){
+    const g = +el.dataset.g;
+    f = u.fixes.find(x => x.type==='insert' && x.gap===g && !st.fx[x.id].done)
+      || u.fixes.find(x => { if(x.type!=='replace' || x.from!==g || st.fx[x.id].done) return false; const a = norm(x.answer).split(' '); return /^(a|an|the)$/.test(a[0]) || a.indexOf(norm(u.tokens[g]))>0; });
+    if(!f) return miss(el, 'Здесь ничего не пропущено.');
+  } else {
+    const i = +el.dataset.i;
+    f = u.fixes.find(x => x.type==='replace' && x.from<=i && i<=x.to && !st.fx[x.id].done);
+    if(!f) return miss(el, isP(u.tokens[i]) ? 'Этот знак на месте.' : 'Здесь всё верно.');
+  }
+  if(f.topic===topic().id) return openFix(f);
+  st.ok = false;
+  st.msg = f.topic==='minor' ? 'Ошибка здесь есть, но из другой темы. Посмотрим её в конце.' : `Ошибка здесь есть, но это тема «${TOPIC[f.topic].title}». До неё ещё дойдём.`;
+  renderPanel();
+}
+
+/* ---------- drills ---------- */
+function dcheck(){
+  const d = topic().drills[st.di], key = `${topic().id}-${st.di}`, raw = $('#dans').value, v = norm(raw);
+  if(!v){ st.dMsg = 'Напиши перевод в поле.'; renderPanel(); return; }
+  if(d.acc.map(norm).includes(v)){
+    st.dOk = true; st.dAns = raw.trim().replace(/[.!?]+$/,''); st.dMsg = 'Верно!';
+    if(!st.dr[key]) st.dr[key] = st.dTries===0 ? 'self' : 'hint';
+    render(); return;
+  }
+  st.dTries++;
+  if(st.dTries===1) st.dMsg = 'Не совсем. ' + d.hint;
+  else if(st.dTries===2) st.dMsg = `Ещё попытка. Первое слово: ${esc(d.acc[0].split(' ')[0])}.`;
+  else { st.dOk = true; st.dAns = d.acc[0]; st.dMsg = 'Правильно так:'; st.dr[key] = 'shown'; render(); return; }
+  renderPanel();
+}
+function dnext(){
+  const t = topic();
+  st.dTries = 0; st.dOk = false; st.dAns = ''; st.dMsg = '';
+  if(st.di < t.drills.length-1) st.di++;
+  else if(st.ti < TOPICS.length-1){ st.ti++; st.phase = 'learn'; st.di = 0; st.msg = ''; st.hint = 0; }
+  else st.stage = 'minor';
+  render(); toTop();
+}
+function mcheck(){
+  const m = MIX[st.mi], raw = $('#mans').value, v = norm(raw);
+  if(!v){ st.mMsg = 'Напиши перевод в поле.'; renderPanel(); return; }
+  st.mAns = raw.trim();
+  const bad = (m.bad || []).find(([re]) => re.test(v)), lack = m.keys.find(([re]) => !re.test(v));
+  if(!bad && !lack){
+    st.mOk = true; st.mMsg = 'Главное верно!';
+    if(!st.mx[st.mi]) st.mx[st.mi] = st.mTries===0 ? 'self' : 'hint';
+    render(); return;
+  }
+  st.mTries++;
+  if(st.mTries>=3){ st.mOk = true; st.mMsg = 'Посмотри на образец и сравни со своим вариантом.'; st.mx[st.mi] = 'shown'; render(); return; }
+  st.mMsg = (bad || lack)[1]; renderPanel();
+  const inp = $('#mans'); if(inp) inp.value = raw;
+}
+function mnext(){
+  st.mTries = 0; st.mOk = false; st.mAns = ''; st.mMsg = '';
+  if(st.mi < MIX.length-1) st.mi++;
+  else { FIXES.forEach(f => { if(f.topic==='minor') st.fx[f.id].done = true; }); st.stage = 'final'; }
+  render(); toTop();
+}
+
+/* ---------- events ---------- */
+$('#page').addEventListener('click', e => { const el = e.target.closest('.tap'); if(el) tap(el); });
+$('#page').addEventListener('keydown', e => { if(e.key!=='Enter' && e.key!==' ') return; const el = e.target.closest('.tap'); if(el){ e.preventDefault(); tap(el); } });
+$('#panel').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const a = b.dataset.act;
+  if(a==='start'){ st.stage = 'topic'; st.ti = 0; st.phase = 'learn'; render(); toTop(); }
+  else if(a==='hunt'){ st.phase = 'hunt'; st.msg = ''; st.hint = 0; st.misses = 0; render(); toTop(); }
+  else if(a==='hint') hint();
+  else if(a==='check') check();
+  else if(a==='back'){ st.open = null; st.msg = ''; render(); }
+  else if(a==='ack'){ resolve(st.reveal, 'shown', 'Разобрали.'); }
+  else if(a==='drill'){ st.phase = 'drill'; st.di = 0; st.dTries = 0; st.dOk = false; st.dMsg = ''; render(); toTop(); }
+  else if(a==='dcheck') dcheck();
+  else if(a==='dnext') dnext();
+  else if(a==='mcheck') mcheck();
+  else if(a==='mnext') mnext();
+  else if(a==='rev'){ st.rev[b.dataset.id] = true; render(); }
+  else if(a==='final'){ st.stage = 'mix'; st.mi = 0; st.mTries = 0; st.mOk = false; st.mMsg = ''; render(); toTop(); }
+  else if(a==='restart'){ reset(); render(); toTop(); }
+  else if(a==='speak') speak(b.dataset.text);
+});
+
+function speak(t){
+  if(!canSpeak) return;
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t);
+    const vs = speechSynthesis.getVoices();
+    const v = vs.find(v => v.lang==='en-GB') || vs.find(v => v.lang && v.lang.startsWith('en'));
+    u.lang = v ? v.lang : 'en-GB'; if(v) u.voice = v; u.rate = .9;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+if(canSpeak){ try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = () => {}; }catch(e){} }
+
+reset(); load(); render();
+
+</script>
+</body>
+</html>
